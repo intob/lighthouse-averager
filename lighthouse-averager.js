@@ -26,9 +26,9 @@ console.log(`Will test ${url}  ${limit} times`);
     
     const tStart = Date.now();
 
-    const chrome = await chromeLauncher.launch({chromeFlags: ['--headless']});
-
     for(i = 0; i < limit; i++) {
+        const chrome = await chromeLauncher.launch({chromeFlags: ['--headless']});
+
         const runnerResult = await lighthouse(url, {port: chrome.port}, config);
 
         scores.performance.push(runnerResult.lhr.categories.performance.score);
@@ -41,9 +41,9 @@ console.log(`Will test ${url}  ${limit} times`);
 
         progressBar.update(i+1);
         progressBar.updateETA();
+
+        await chrome.kill();
     }
-    
-    await chrome.kill();
 
     const tEnd = Date.now();
 
@@ -56,7 +56,7 @@ console.log(`Will test ${url}  ${limit} times`);
     logMetric('First Contentful Paint', calcMean(scores.fcp) * 100);
     logMetric('Time to Interactive', calcMean(scores.tti) * 100);
     logMetric('Speed Index', calcMean(scores.speed) * 100);
-    logMetric('Cumulative Layout Shift', 100 - (calcMean(scores.cls, 4) * 100));
+    logMetric('Cumulative Layout Shift', 100 - (calcMean(scores.cls, 6) * 100));
 })();
 
 function calcMean(metric, fractionDigits=2) {

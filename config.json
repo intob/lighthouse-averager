@@ -1,7 +1,9 @@
 {
   "extends": "lighthouse:default",
   "settings": {
-      "throttlingMethod": "devtools",
-      "onlyCategories": ["performance"]
-    }
+    "onlyCategories": ["performance"],
+    "maxWaitForFcp": 15000,
+    "maxWaitForLoad": 35000
+  },
+  "skipAudits": ["uses-http2"]
 }
