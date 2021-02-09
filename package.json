@@ -10,7 +10,8 @@
   "dependencies": {
     "lighthouse": "^7.0.1",
     "chrome-launcher": "^0.13.4",
-    "colors": "^1.4.0"
+    "colors": "^1.4.0",
+    "cli-progress": "3.9.0"
   },
   "author": "Joseph Innes",
   "license": "MIT"

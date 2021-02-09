@@ -2,9 +2,11 @@ const lighthouse = require('lighthouse');
 const chromeLauncher = require('chrome-launcher');
 const fs = require('fs');
 const colors = require('colors');
+const cliProgress = require('cli-progress');
 
 const url = process.argv[2];
 const limit = parseInt(process.argv[3]) || 3;
+const config = process.argv[4] || require('./config.json');
 
 const scores = {
     performance: [],
@@ -19,12 +21,15 @@ const scores = {
 console.log(`Will test ${url}  ${limit} times`);
 
 (async () => {
+    const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.rect)
+    progressBar.start(limit, 0);
+    
+    const tStart = Date.now();
+
+    const chrome = await chromeLauncher.launch({chromeFlags: ['--headless']});
+
     for(i = 0; i < limit; i++) {
-        const chrome = await chromeLauncher.launch({chromeFlags: ['--headless']});
-        const options = {output: 'html', onlyCategories: ['performance'], port: chrome.port};
-        const runnerResult = await lighthouse(url, options);
-        
-        console.log(`Report ${i+1} done, score was ${runnerResult.lhr.categories.performance.score * 100}`);
+        const runnerResult = await lighthouse(url, {port: chrome.port}, config);
 
         scores.performance.push(runnerResult.lhr.categories.performance.score);
         scores.fcp.push(runnerResult.lhr.audits["first-contentful-paint"].score);
@@ -33,11 +38,18 @@ console.log(`Will test ${url}  ${limit} times`);
         scores.tbt.push(runnerResult.lhr.audits["total-blocking-time"].score);
         scores.cls.push(runnerResult.lhr.audits["cumulative-layout-shift"].score);
         scores.speed.push(runnerResult.lhr.audits["speed-index"].score);
-        
-        await chrome.kill();
-    }
 
-    console.log('Test complete'.green, '🎉');
+        progressBar.update(i+1);
+        progressBar.updateETA();
+    }
+    
+    await chrome.kill();
+
+    const tEnd = Date.now();
+
+    progressBar.stop();
+
+    console.log(`🎉 done in ${(tEnd-tStart)/1000}s`);
     logMetric('Overall Performance', calcMean(scores.performance));
     logMetric('Largest Contentful Paint', calcMean(scores.lcp));
     logMetric('Total Blocking Time', calcMean(scores.tbt));
@@ -61,5 +73,4 @@ function logMetric(name, score) {
     } else {
         console.log(name, `${score}`.red)
     }
-    
 }
