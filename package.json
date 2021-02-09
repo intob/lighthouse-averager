@@ -1,7 +1,7 @@
 {
   "name": "lighthouse-averager",
   "version": "1.0.0",
-  "description": "Average lighthouse results for a url",
+  "description": "Runs a Lighthouse audit for a URL multiple times, outputs average results.",
   "main": "lighthouse-averager.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
