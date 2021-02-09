@@ -50,19 +50,19 @@ console.log(`Will test ${url}  ${limit} times`);
     progressBar.stop();
 
     console.log(`🎉 done in ${(tEnd-tStart)/1000}s`);
-    logMetric('Overall Performance', calcMean(scores.performance));
-    logMetric('Largest Contentful Paint', calcMean(scores.lcp));
-    logMetric('Total Blocking Time', calcMean(scores.tbt));
-    logMetric('First Contentful Paint', calcMean(scores.fcp));
-    logMetric('Time to Interactive', calcMean(scores.tti));
-    logMetric('Speed Index', calcMean(scores.speed));
-    logMetric('Cumulative Layout Shift', calcMean(scores.cls));
+    logMetric('Overall Performance', calcMean(scores.performance) * 100);
+    logMetric('Largest Contentful Paint', calcMean(scores.lcp) * 100);
+    logMetric('Total Blocking Time', calcMean(scores.tbt) * 100);
+    logMetric('First Contentful Paint', calcMean(scores.fcp) * 100);
+    logMetric('Time to Interactive', calcMean(scores.tti) * 100);
+    logMetric('Speed Index', calcMean(scores.speed) * 100);
+    logMetric('Cumulative Layout Shift', 100 - (calcMean(scores.cls, 4) * 100));
 })();
 
-function calcMean(metric) {
+function calcMean(metric, fractionDigits=2) {
     let total = 0;
     metric.forEach(s => total+=s);
-    return (total/metric.length).toFixed(2) * 100;
+    return (total/metric.length).toFixed(fractionDigits);
 }
 
 function logMetric(name, score) {
