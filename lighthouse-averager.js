@@ -6,7 +6,7 @@ const cliProgress = require('cli-progress');
 
 const url = process.argv[2];
 const limit = parseInt(process.argv[3]) || 3;
-const config = process.argv[4] || require('./config.json');
+const config = (process.argv[4] && require(process.argv[4])) || require('./config.json');
 
 const scores = {
     performance: [],
@@ -56,7 +56,7 @@ console.log(`Will test ${url}  ${limit} times`);
     logMetric('First Contentful Paint', calcMean(scores.fcp) * 100);
     logMetric('Time to Interactive', calcMean(scores.tti) * 100);
     logMetric('Speed Index', calcMean(scores.speed) * 100);
-    logMetric('Cumulative Layout Shift', 100 - (calcMean(scores.cls, 6) * 100));
+    logMetric('Cumulative Layout Shift', calcMean(scores.cls) * 100);
 })();
 
 function calcMean(metric, fractionDigits=2) {
